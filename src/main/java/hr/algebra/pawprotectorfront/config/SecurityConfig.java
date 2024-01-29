@@ -48,13 +48,14 @@ public class SecurityConfig {
         http
                 .authorizeRequests(auth -> {
                     auth
-                            .requestMatchers(new AntPathRequestMatcher("/")).permitAll() // Allow everyone to access the "/" endpoint
-                            .requestMatchers(new AntPathRequestMatcher("/admin/**")).hasRole("ADMIN") // Only administrators can access the "/admin/**" endpoints
-                            .requestMatchers(new AntPathRequestMatcher("/user/**")).hasAnyRole("USER", "ADMIN") // Only users and administrators can access the "/user/**" endpoints
-                            .anyRequest().authenticated(); // All other requests require authentication
+                            .requestMatchers(new AntPathRequestMatcher("/")).permitAll()
+                            .requestMatchers(new AntPathRequestMatcher("/admin/**")).hasRole("ADMIN")
+                            .requestMatchers(new AntPathRequestMatcher("/breeder/**")).hasAnyRole("BREEDER", "ADMIN")
+                            .requestMatchers(new AntPathRequestMatcher("/user/**")).hasAnyRole("USER", "ADMIN")
+                            .anyRequest().authenticated();
                 })
-                .oauth2Login(withDefaults()) // Enable OAuth 2.0 login
-                .formLogin(withDefaults()); // Enable form login
+                .oauth2Login(withDefaults())
+                .formLogin(withDefaults());
 
         return http.build();
     }
@@ -65,7 +66,6 @@ public class SecurityConfig {
             OAuth2User oAuth2User = delegate.loadUser(userRequest);
             Set<GrantedAuthority> authorities = new HashSet<>(oAuth2User.getAuthorities());
             authorities.add(() -> "ROLE_USER");
-
             return new DefaultOAuth2User(authorities, oAuth2User.getAttributes(), "login");
         };
     }
