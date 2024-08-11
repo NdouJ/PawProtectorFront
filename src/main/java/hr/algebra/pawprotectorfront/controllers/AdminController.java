@@ -1,23 +1,31 @@
 package hr.algebra.pawprotectorfront.controllers;
 
+import hr.algebra.pawprotectorfront.services.HksApiService;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+
 @RestController
 public class AdminController {
-
+    private final HksApiService hksApiService;
+    public AdminController(HksApiService hksApiService) {
+        this.hksApiService = hksApiService;
+    }
     @GetMapping("/admin")
     @PreAuthorize("hasRole('ADMIN')")
     public String adminEndpoint() {
-        return "This endpoint is accessible only by admin";
+
+        return "This endpoint is accessible by  admin";
     }
 
     @GetMapping("/user")
     @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
     public String userEndpoint() {
+
+
         return "This endpoint is accessible by user and admin";
     }
     @GetMapping("/breeder")
@@ -27,7 +35,8 @@ public class AdminController {
     }
     @GetMapping("/")
     public String commonEndpoint() {
-        return "This endpoint is accessible by everyone";
+        String token = hksApiService.getToken();
+        return hksApiService.getAllDogs(token);
     }
 
     @GetMapping("/getAuthenticatedUser")
