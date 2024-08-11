@@ -1,3 +1,4 @@
+
 package hr.algebra.pawprotectorfront.config;
 
 import org.springframework.context.annotation.Bean;

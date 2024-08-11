@@ -33,12 +33,13 @@ public class AdminController {
     public String breederEndpoint() {
         return "This endpoint is accessible by breeder and admin";
     }
+    /*
     @GetMapping("/")
     public String commonEndpoint() {
         String token = hksApiService.getToken();
         return hksApiService.getAllDogs(token);
     }
-
+*/
     @GetMapping("/getAuthenticatedUser")
     public String getAuthenticatedUser() {
         // Retrieve the authentication object from the SecurityContextHolder
