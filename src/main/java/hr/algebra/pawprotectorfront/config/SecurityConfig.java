@@ -4,7 +4,9 @@ package hr.algebra.pawprotectorfront.config;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -27,7 +29,8 @@ import static org.springframework.security.config.Customizer.withDefaults;
 
 @Configuration
 @EnableWebSecurity
-public class SecurityConfig {
+public class SecurityConfig  {
+
 
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -51,6 +54,7 @@ public class SecurityConfig {
                     auth
                             .requestMatchers(new AntPathRequestMatcher("/")).permitAll()
                             .requestMatchers(new AntPathRequestMatcher("/admin/**")).hasRole("ADMIN")
+                            .requestMatchers("/", "/css/**", "/scripts/**", "/images/**").permitAll()
                             .requestMatchers(new AntPathRequestMatcher("/breeder/**")).hasAnyRole("BREEDER", "ADMIN")
                             .requestMatchers(new AntPathRequestMatcher("/user/**")).hasAnyRole("USER", "ADMIN")
                             .anyRequest().authenticated();
@@ -59,6 +63,10 @@ public class SecurityConfig {
                 .formLogin(withDefaults());
 
         return http.build();
+    }
+    @Bean
+    public WebSecurityCustomizer webSecurityCustomizer() {
+        return (web) -> web.ignoring().requestMatchers("/css/**", "/scripts/**", "/images/**");
     }
     @Bean
     public OAuth2UserService<OAuth2UserRequest, OAuth2User> oAuth2UserService() {
@@ -70,4 +78,6 @@ public class SecurityConfig {
             return new DefaultOAuth2User(authorities, oAuth2User.getAttributes(), "login");
         };
     }
+
+
 }
