@@ -3,6 +3,7 @@ package hr.algebra.pawprotectorfront.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -20,6 +21,8 @@ import org.springframework.security.oauth2.core.user.DefaultOAuth2User;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
+import org.springframework.security.web.csrf.CsrfTokenRequestAttributeHandler;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 import java.util.HashSet;
@@ -49,20 +52,25 @@ public class SecurityConfig  {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        http
-                .authorizeRequests(auth -> {
-                    auth
-                            .requestMatchers(new AntPathRequestMatcher("/")).permitAll()
-                            .requestMatchers(new AntPathRequestMatcher("/admin/**")).hasRole("ADMIN")
-                            .requestMatchers("/", "/css/**", "/scripts/**", "/images/**").permitAll()
-                            .requestMatchers(new AntPathRequestMatcher("/breeder/**")).hasAnyRole("BREEDER", "ADMIN")
-                            .requestMatchers(new AntPathRequestMatcher("/user/**")).hasAnyRole("USER", "ADMIN")
-                            .anyRequest().authenticated();
-                })
-                .oauth2Login(withDefaults())
-                .formLogin(withDefaults());
+        CsrfTokenRequestAttributeHandler csrfRequestHandler = new CsrfTokenRequestAttributeHandler();
+        csrfRequestHandler.setCsrfRequestAttributeName("_csrf");
 
-        return http.build();
+        return http
+                .cors(Customizer.withDefaults())
+                .csrf(csrf -> csrf
+                        .csrfTokenRequestHandler(csrfRequestHandler)
+                        .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse()))
+                .authorizeHttpRequests(auth -> auth
+                        .requestMatchers("/").permitAll() // Permits access to root path
+                        .requestMatchers("/breederOfDog").permitAll() // Permits access to /breederOfDog
+                        .requestMatchers("/css/**", "/scripts/**", "/images/**").permitAll() // Static resources
+                        .requestMatchers("/admin/**").hasRole("ADMIN") // Admin role access
+                        .requestMatchers("/breeder/**").hasAnyRole("BREEDER", "ADMIN") // Breeder and Admin roles
+                        .requestMatchers("/user/**").hasAnyRole("USER", "ADMIN") // User and Admin roles
+                        .anyRequest().authenticated()) // All other requests must be authenticated
+                .oauth2Login(withDefaults()) // Default OAuth2 login
+                .formLogin(withDefaults()) // Default form login
+                .build();
     }
     @Bean
     public WebSecurityCustomizer webSecurityCustomizer() {

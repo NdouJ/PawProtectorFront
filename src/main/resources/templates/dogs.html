@@ -20,14 +20,24 @@
     <thead>
     <tr>
       <th>Breed Name</th>
+      <th>Avg Weight Female</th>
+      <th>Avg Weight Male</th>
+      <th>Description</th>
       <th>Image</th>
+      <th>Actions</th>
     </tr>
     </thead>
     <tbody>
     <tr th:each="dog : ${dogs}">
       <td th:text="${dog.breedName}"></td>
+      <td th:text="${dog.avgWeightFemale}"></td>
+      <td th:text="${dog.avgWeightMale}"></td>
+      <td th:text="${dog.description}"></td>
+      <td><img th:src="${dog.image}" alt="Dog Image" style="max-width: 80px; max-height: 80px; border-radius: 50%; object-fit: cover;" /></td>
       <td>
-        <img th:src="${dog.image}" alt="Dog Image" style="max-width: 80px; max-height: 80px; border-radius: 50%; object-fit: cover;" />
+        <a th:href="@{/breederOfDog(dogName=${dog.breedName})}" class="btn btn-primary">
+          See Breeders
+        </a>
       </td>
     </tr>
     </tbody>

@@ -19,11 +19,20 @@ public class HksApiService {
 
     @Value("${api.dogs.url}")
     private String dogsUrl;
+
+    @Value("${api.breedersOfDog.url}")
+    private String breedersOfDog;
+
     private final RestTemplate restTemplate;
+    private String token;
     public HksApiService(){
         this.restTemplate = new RestTemplate(new HttpComponentsClientHttpRequestFactory());
     }
     public String getToken() {
+
+        if (token != null && !token.isEmpty()) {
+            return token;
+        }
         ResponseEntity<String> response = restTemplate.getForEntity(loginUrl, String.class);
 
         if (response.getStatusCode() == HttpStatus.OK) {
@@ -56,4 +65,17 @@ public class HksApiService {
             throw new RuntimeException("Failed to get dogs: " + response.getStatusCode());
         }
     }
+    public String getBreedersOfDog(String token, String dogName) {
+        String url = String.format("%s?dog=%s", breedersOfDog, dogName);
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("Authorization", "Bearer " + token);
+        HttpEntity<String> entity = new HttpEntity<>(headers);
+        ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.GET, entity, String.class);
+        if (response.getStatusCode() == HttpStatus.OK) {
+            return response.getBody();
+        } else {
+            throw new RuntimeException("Failed to get breeders of dog: " + response.getStatusCode());
+        }
+    }
+
 }
