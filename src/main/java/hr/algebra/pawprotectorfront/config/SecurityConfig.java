@@ -1,9 +1,13 @@
+
 package hr.algebra.pawprotectorfront.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -17,6 +21,8 @@ import org.springframework.security.oauth2.core.user.DefaultOAuth2User;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
+import org.springframework.security.web.csrf.CsrfTokenRequestAttributeHandler;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 import java.util.HashSet;
@@ -26,7 +32,8 @@ import static org.springframework.security.config.Customizer.withDefaults;
 
 @Configuration
 @EnableWebSecurity
-public class SecurityConfig {
+public class SecurityConfig  {
+
 
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -45,18 +52,29 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        http
-                .authorizeRequests(auth -> {
-                    auth
-                            .requestMatchers(new AntPathRequestMatcher("/")).permitAll() // Allow everyone to access the "/" endpoint
-                            .requestMatchers(new AntPathRequestMatcher("/admin/**")).hasRole("ADMIN") // Only administrators can access the "/admin/**" endpoints
-                            .requestMatchers(new AntPathRequestMatcher("/user/**")).hasAnyRole("USER", "ADMIN") // Only users and administrators can access the "/user/**" endpoints
-                            .anyRequest().authenticated(); // All other requests require authentication
-                })
-                .oauth2Login(withDefaults()) // Enable OAuth 2.0 login
-                .formLogin(withDefaults()); // Enable form login
+        CsrfTokenRequestAttributeHandler csrfRequestHandler = new CsrfTokenRequestAttributeHandler();
+        csrfRequestHandler.setCsrfRequestAttributeName("_csrf");
 
-        return http.build();
+        return http
+                .cors(Customizer.withDefaults())
+                .csrf(csrf -> csrf
+                        .csrfTokenRequestHandler(csrfRequestHandler)
+                        .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse()))
+                .authorizeHttpRequests(auth -> auth
+                        .requestMatchers("/").permitAll() // Permits access to root path
+                        .requestMatchers("/breederOfDog").permitAll() // Permits access to /breederOfDog
+                        .requestMatchers("/css/**", "/scripts/**", "/images/**").permitAll() // Static resources
+                        .requestMatchers("/admin/**").hasRole("ADMIN") // Admin role access
+                        .requestMatchers("/breeder/**").hasAnyRole("BREEDER", "ADMIN") // Breeder and Admin roles
+                        .requestMatchers("/user/**").hasAnyRole("USER", "ADMIN") // User and Admin roles
+                        .anyRequest().authenticated()) // All other requests must be authenticated
+                .oauth2Login(withDefaults()) // Default OAuth2 login
+                .formLogin(withDefaults()) // Default form login
+                .build();
+    }
+    @Bean
+    public WebSecurityCustomizer webSecurityCustomizer() {
+        return (web) -> web.ignoring().requestMatchers("/css/**", "/scripts/**", "/images/**");
     }
     @Bean
     public OAuth2UserService<OAuth2UserRequest, OAuth2User> oAuth2UserService() {
@@ -65,8 +83,9 @@ public class SecurityConfig {
             OAuth2User oAuth2User = delegate.loadUser(userRequest);
             Set<GrantedAuthority> authorities = new HashSet<>(oAuth2User.getAuthorities());
             authorities.add(() -> "ROLE_USER");
-
             return new DefaultOAuth2User(authorities, oAuth2User.getAttributes(), "login");
         };
     }
+
+
 }
