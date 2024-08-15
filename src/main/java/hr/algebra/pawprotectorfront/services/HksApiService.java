@@ -1,6 +1,7 @@
 package hr.algebra.pawprotectorfront.services;
 
 
+import hr.algebra.pawprotectorfront.models.Seller;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -22,6 +23,12 @@ public class HksApiService {
 
     @Value("${api.breedersOfDog.url}")
     private String breedersOfDog;
+
+    @Value ("${api.postSeller.url}")
+    private String postSeller;
+
+    @Value("${api.getBreeders.url}")
+    private String getBreeders;
 
     private final RestTemplate restTemplate;
     private String token;
@@ -65,6 +72,8 @@ public class HksApiService {
             throw new RuntimeException("Failed to get dogs: " + response.getStatusCode());
         }
     }
+
+    //Breeder
     public String getBreedersOfDog(String token, String dogName) {
         String url = String.format("%s?dog=%s", breedersOfDog, dogName);
         HttpHeaders headers = new HttpHeaders();
@@ -77,5 +86,35 @@ public class HksApiService {
             throw new RuntimeException("Failed to get breeders of dog: " + response.getStatusCode());
         }
     }
+
+    public String getAllBreeders(String token) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("Authorization", "Bearer " + token);
+
+        HttpEntity<String> entity = new HttpEntity<>(headers);
+        ResponseEntity<String> response = restTemplate.exchange(getBreeders, HttpMethod.GET, entity, String.class);
+
+        if (response.getStatusCode() == HttpStatus.OK) {
+            return response.getBody();
+        } else {
+            throw new RuntimeException("Failed to get Breeders: " + response.getStatusCode());
+        }
+    }
+//seller
+public String postSeller(String token, Seller seller) {
+    HttpHeaders headers = new HttpHeaders();
+    headers.set("Authorization", "Bearer " + token);
+    HttpEntity<Seller> entity = new HttpEntity<>(seller, headers);
+    seller.setIdSeller(1);
+
+    ResponseEntity<String> response = restTemplate.exchange(postSeller, HttpMethod.POST, entity, String.class);
+    if (response.getStatusCode() == HttpStatus.OK) {
+        return response.getBody();
+    } else {
+        throw new RuntimeException("Failed to post Seller " + response.getStatusCode());
+    }
+}
+
+
 
 }

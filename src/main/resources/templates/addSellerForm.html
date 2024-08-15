@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="_layout">
+
+
+
+<body>
+<div class="container my-4">
+  <div layout:fragment="content">
+    <div th:if="${errorMessage}" class="alert alert-danger" role="alert">
+      <p th:text="${errorMessage}"></p>
+    </div>
+
+    <form action="#" th:action="@{/admin/addSeller}" th:object="${seller}" method="post">
+      <div class="form-group">
+        <label for="breederName">Breeder Name:</label>
+        <select id="breederName" th:field="*{breederName}" class="form-control" required>
+          <option value="" disabled selected>Select a breeder</option>
+          <option th:each="breeder : ${breeders}" th:value="${breeder.getBreederName()}" th:text="${breeder.getBreederName()}"></option>
+        </select>
+        <div class="invalid-feedback">
+          Please provide a breeder name.
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="contactInfo">Contact Info:</label>
+        <input type="text" id="contactInfo" th:field="*{contactInfo}" class="form-control" required>
+        <div class="invalid-feedback">
+          Please provide contact information.
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="oib">OIB:</label>
+        <input type="text" id="oib" th:field="*{oib}" class="form-control" required>
+        <div class="invalid-feedback">
+          Please provide OIB.
+        </div>
+      </div>
+
+      <button type="submit" class="btn btn-primary">Submit</button>
+    </form>
+  </div>
+  </div>
+</div>
+</body>
+</html>
