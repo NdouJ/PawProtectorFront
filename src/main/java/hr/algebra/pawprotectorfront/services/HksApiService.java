@@ -30,6 +30,9 @@ public class HksApiService {
     @Value("${api.getBreeders.url}")
     private String getBreeders;
 
+    @Value("${api.checkUser.url}")
+    private String checkUser;
+
     private final RestTemplate restTemplate;
     private String token;
     public HksApiService(){
@@ -115,6 +118,27 @@ public String postSeller(String token, Seller seller) {
     }
 }
 
+    public String checkSeller(Seller seller) {
+        HttpHeaders headers = new HttpHeaders();
+        //headers.set("Authorization", "Bearer " + token);
+
+        hr.algebra.pawprotectorfront.models.User user = new hr.algebra.pawprotectorfront.models.User();
+        user.setId(1);
+        user.setUsername(seller.getContactInfo());
+        user.setPasswordHash(seller.getTempPassword());
+        user.setRoleId(2);
+        HttpEntity< hr.algebra.pawprotectorfront.models.User> entity = new HttpEntity<>(user, headers);
+        ResponseEntity<String> response = restTemplate.exchange(checkUser, HttpMethod.POST, entity, String.class);
+        if (response.getStatusCode() == HttpStatus.OK) {
+            return "OK";
+        }
+        else if(response.getStatusCode()==HttpStatus.UNAUTHORIZED){
+            return "Wrong credentials";
+        }
+        else {
+            throw new RuntimeException("Failed to check Seller " + response.getStatusCode());
+        }
+    }
 
 
 }
