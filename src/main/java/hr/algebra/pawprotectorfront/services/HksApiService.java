@@ -1,16 +1,16 @@
 package hr.algebra.pawprotectorfront.services;
 
 
+import hr.algebra.pawprotectorfront.models.PackInfo;
 import hr.algebra.pawprotectorfront.models.Seller;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
+
+import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 
 
 @Service
@@ -32,6 +32,9 @@ public class HksApiService {
 
     @Value("${api.checkUser.url}")
     private String checkUser;
+
+    @Value("${api.packInfo.url}")
+    private String postPackInfo;
 
     private final RestTemplate restTemplate;
     private String token;
@@ -141,4 +144,19 @@ public String postSeller(String token, Seller seller) {
     }
 
 
+    public String savePackInfo(String token, PackInfo packInfo) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("Authorization", "Bearer " + token);
+        packInfo.setDog("dog");
+        packInfo.setMaleCount(1);
+        packInfo.setFMaleCount(1);
+        packInfo.setBirthDate(OffsetDateTime.now());
+        HttpEntity<PackInfo> entity = new HttpEntity<>(packInfo, headers);
+        ResponseEntity<String> response = restTemplate.exchange(postPackInfo, HttpMethod.POST, entity, String.class);
+        if (response.getStatusCode() == HttpStatus.OK) {
+            return response.getBody();
+        } else {
+            throw new RuntimeException("Failed to post Seller " + response.getStatusCode());
+        }
+    }
 }
