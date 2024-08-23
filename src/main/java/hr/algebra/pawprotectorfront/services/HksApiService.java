@@ -36,6 +36,9 @@ public class HksApiService {
     @Value("${api.packInfo.url}")
     private String postPackInfo;
 
+    @Value("${api.Key}")
+    private String apiKey;
+
     private final RestTemplate restTemplate;
     private String token;
     public HksApiService(){
@@ -46,7 +49,8 @@ public class HksApiService {
         if (token != null && !token.isEmpty()) {
             return token;
         }
-        ResponseEntity<String> response = restTemplate.getForEntity(loginUrl, String.class);
+        String url=loginUrl+"?apiKey="+apiKey;
+        ResponseEntity<String> response = restTemplate.getForEntity(url, String.class);
 
         if (response.getStatusCode() == HttpStatus.OK) {
             String token = response.getBody();
@@ -123,7 +127,7 @@ public String postSeller(String token, Seller seller) {
 
     public String checkSeller(Seller seller) {
         HttpHeaders headers = new HttpHeaders();
-        //headers.set("Authorization", "Bearer " + token);
+       // headers.set("Authorization", "Bearer " + token);
 
         hr.algebra.pawprotectorfront.models.User user = new hr.algebra.pawprotectorfront.models.User();
         user.setId(1);
@@ -156,7 +160,7 @@ public String postSeller(String token, Seller seller) {
         if (response.getStatusCode() == HttpStatus.OK) {
             return response.getBody();
         } else {
-            throw new RuntimeException("Failed to post Seller " + response.getStatusCode());
+            throw new RuntimeException("Failed to post Pack " + response.getStatusCode());
         }
     }
 }

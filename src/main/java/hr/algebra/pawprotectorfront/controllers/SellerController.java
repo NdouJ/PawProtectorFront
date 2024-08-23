@@ -31,7 +31,7 @@ public class SellerController {
         if (authentication != null && authentication.getPrincipal() instanceof UserDetails) {
             UserDetails userDetails = (UserDetails) authentication.getPrincipal();
             String sellerContactInfo = userDetails.getUsername();
-            packInfo.setSellerContectInfo(sellerContactInfo);
+            packInfo.setSellerContactInfo(sellerContactInfo);
         }
         String token = hksApiService.getToken();
         hksApiService.savePackInfo(token, packInfo);

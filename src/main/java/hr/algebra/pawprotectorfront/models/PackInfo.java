@@ -12,7 +12,7 @@ import java.time.OffsetDateTime;
 @NoArgsConstructor
 @Data
 public class PackInfo {
-    private String sellerContectInfo;
+    private String sellerContactInfo;
     private String dog;
     @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSXXX")
     private OffsetDateTime birthDate;
