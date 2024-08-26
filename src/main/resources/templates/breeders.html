@@ -25,7 +25,8 @@
       </tr>
       </thead>
       <tbody>
-      <tr th:each="breeder : ${breeders}">
+      <tr th:each="breeder : ${breeders}"
+          th:onclick="'window.location.href=\'/breederDetails/' + ${breeder.getIdBreeder()} + '\';'">
         <td th:text="${breeder.getBreederName()}"></td>
         <td th:text="${breeder.getBreederInfo()}"></td>
         <td th:text="${breeder.getBreederContact()}"></td>

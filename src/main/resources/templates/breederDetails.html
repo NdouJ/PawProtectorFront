@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="_layout">
+
+<body>
+<div class="container my-4">
+    <div layout:fragment="content">
+        <form action="/user/addReview" method="GET">
+            <button type="submit" class="btn btn-primary">Add Review</button>
+        </form>
+        <a href="/" class="btn btn-secondary">Back to Breeders List</a>
+    </div>
+</div>
+</body>
+</html>

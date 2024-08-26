@@ -70,6 +70,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/").permitAll()
                         .requestMatchers("/breederOfDog").permitAll()
+                        .requestMatchers("/breederDetails/**").permitAll()
                         .requestMatchers("/login/**").permitAll()
                         .requestMatchers("/css/**", "/scripts/**", "/images/**").permitAll()
                         .requestMatchers("/admin/**").hasRole("ADMIN")

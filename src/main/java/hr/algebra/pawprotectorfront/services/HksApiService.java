@@ -1,15 +1,17 @@
 package hr.algebra.pawprotectorfront.services;
 
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import hr.algebra.pawprotectorfront.models.PackInfo;
 import hr.algebra.pawprotectorfront.models.Seller;
+import hr.algebra.pawprotectorfront.models.User;
+import hr.algebra.pawprotectorfront.models.UserReview;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
+import org.springframework.security.oauth2.core.http.converter.OAuth2AccessTokenResponseHttpMessageConverter;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
-
-import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 
 
@@ -38,6 +40,13 @@ public class HksApiService {
 
     @Value("${api.Key}")
     private String apiKey;
+
+    @Value("${api.postUser.url}")
+    private String postUser;
+    @Value("${api.postReview.url}")
+    private String postReview;
+    @Value("${api.getOath2User.url}")
+    private String getOath2User;
 
     private final RestTemplate restTemplate;
     private String token;
@@ -161,6 +170,68 @@ public String postSeller(String token, Seller seller) {
             return response.getBody();
         } else {
             throw new RuntimeException("Failed to post Pack " + response.getStatusCode());
+        }
+    }
+
+    public void postOath2User(String username, String token) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("Authorization", "Bearer " + token);
+
+        hr.algebra.pawprotectorfront.models.User oathUser = new User();
+        oathUser.setRoleId(3);
+        oathUser.setUsername(username);
+        oathUser.setPasswordHash("3");
+        oathUser.setId(1);
+
+        HttpEntity<User> entity = new HttpEntity<>(oathUser, headers);
+        headers.set("Content-Type", "application/json");
+        ResponseEntity<String> response = restTemplate.exchange(postUser, HttpMethod.POST, entity, String.class);
+        if (response.getStatusCode() != HttpStatus.OK) {
+
+            throw new RuntimeException("Failed to post User " + response.getStatusCode());
+        }
+
+    }
+
+
+    public Integer getOathUserId(String username, String token) {
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("Authorization", "Bearer " + token);
+
+String url = getOath2User+"?name="+username;
+        HttpEntity<String> entity = new HttpEntity<>(headers);
+        ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.GET, entity, String.class);
+
+        if (response.getStatusCode() == HttpStatus.OK) {
+            return ParseUser(response.getBody());
+        } else {
+            throw new RuntimeException("Failed to userID " + response.getStatusCode());
+        }
+    }
+
+    private Integer ParseUser(String body) {
+        ObjectMapper objectMapper = new ObjectMapper();
+        try {
+            User user = objectMapper.readValue(body, User.class);
+            // Assuming you want to return the user's ID after parsing
+            return user.getId();
+        } catch (Exception e) {
+            e.printStackTrace();
+            // Handle the exception as needed
+            return null;
+        }
+    }
+
+    public void postUserReview(UserReview userReview, String token) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("Authorization", "Bearer " + token);
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        HttpEntity<UserReview> entity = new HttpEntity<>(userReview, headers);
+        ResponseEntity<String> response = restTemplate.exchange(postReview, HttpMethod.POST, entity, String.class);
+        if (response.getStatusCode() != HttpStatus.CREATED) {
+
+            throw new RuntimeException("Failed to post userReview " + response.getStatusCode());
         }
     }
 }

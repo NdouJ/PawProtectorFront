@@ -5,9 +5,11 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import hr.algebra.pawprotectorfront.models.Breeder;
 import hr.algebra.pawprotectorfront.models.Dog;
 import hr.algebra.pawprotectorfront.services.HksApiService;
+import jakarta.servlet.http.HttpSession;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
@@ -46,6 +48,12 @@ public class BreederController {
             e.printStackTrace();
             return null;
         }
+    }
+    @GetMapping("/breederDetails/{id}")
+    public String getBreederDetails(@PathVariable("id") Integer breederId, Model model, HttpSession session) {
+        session.setAttribute("breederId", breederId);
+        model.addAttribute("breederId", breederId);
+        return "breederDetails";
     }
 
     public List<Dog> parseDogs(String jsonResponse) {

@@ -21,16 +21,12 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
 
     @Override
     public OAuth2User loadUser(OAuth2UserRequest userRequest) throws OAuth2AuthenticationException {
-        // Delegate to the default OAuth2UserService
         OAuth2User oAuth2User = defaultOAuth2UserService.loadUser(userRequest);
 
-        // Fetch the existing authorities
         Set<GrantedAuthority> authorities = new HashSet<>(oAuth2User.getAuthorities());
 
-        // Add the ROLE_USER authority
         authorities.add(new SimpleGrantedAuthority("ROLE_USER"));
 
-        // Return a DefaultOAuth2User with the authorities and user attributes
         return new DefaultOAuth2User(authorities, oAuth2User.getAttributes(), "login");
     }
 
