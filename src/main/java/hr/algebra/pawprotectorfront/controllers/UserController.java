@@ -1,5 +1,6 @@
 package hr.algebra.pawprotectorfront.controllers;
 
+import hr.algebra.pawprotectorfront.models.Donation;
 import hr.algebra.pawprotectorfront.models.UserReview;
 import hr.algebra.pawprotectorfront.services.HksApiService;
 import jakarta.servlet.http.HttpSession;
@@ -62,4 +63,21 @@ userReview.setIdUserReview(1);
         return username;
     }
 
+
+    @GetMapping("/user/donation")
+    public String addFonation(Model model) {
+        model.addAttribute("donation", new Donation());
+        return "donation";
+    }
+
+    @PostMapping ("/user/donation")
+    public String addFonation(Donation donation, Model model) {
+        model.addAttribute("donation", new Donation());
+        String username= GetOath2UserName();
+        hksApiService.postOath2User(username, hksApiService.getToken());
+        donation.setUserId(hksApiService.getOathUserId(username, hksApiService.getToken()));
+        double amount = donation.getAmount();
+        hksApiService.postDonation(hksApiService.getToken(), donation);
+        return "redirect:/paypal/donate?amount=" + amount;
+    }
 }

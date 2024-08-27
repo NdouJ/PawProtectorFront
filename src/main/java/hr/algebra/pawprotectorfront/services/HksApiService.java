@@ -2,10 +2,7 @@ package hr.algebra.pawprotectorfront.services;
 
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import hr.algebra.pawprotectorfront.models.PackInfo;
-import hr.algebra.pawprotectorfront.models.Seller;
-import hr.algebra.pawprotectorfront.models.User;
-import hr.algebra.pawprotectorfront.models.UserReview;
+import hr.algebra.pawprotectorfront.models.*;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
@@ -47,6 +44,8 @@ public class HksApiService {
     private String postReview;
     @Value("${api.getOath2User.url}")
     private String getOath2User;
+    @Value("${api.donation.url}")
+    private String postDonation;
 
     private final RestTemplate restTemplate;
     private String token;
@@ -232,6 +231,20 @@ String url = getOath2User+"?name="+username;
         if (response.getStatusCode() != HttpStatus.CREATED) {
 
             throw new RuntimeException("Failed to post userReview " + response.getStatusCode());
+        }
+    }
+
+    public void postDonation(String token, Donation donation) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("Authorization", "Bearer " + token);
+        donation.setDonationTime(OffsetDateTime.now());
+        donation.setIdDonation(1);
+        HttpEntity<Donation> entity = new HttpEntity<>(donation, headers);
+        headers.set("Content-Type", "application/json");
+        ResponseEntity<String> response = restTemplate.exchange(postDonation, HttpMethod.POST, entity, String.class);
+        if (response.getStatusCode() != HttpStatus.CREATED) {
+
+            throw new RuntimeException("Failed to post Donation " + response.getStatusCode());
         }
     }
 }
