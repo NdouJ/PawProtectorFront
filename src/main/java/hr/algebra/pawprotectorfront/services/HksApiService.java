@@ -1,15 +1,17 @@
 package hr.algebra.pawprotectorfront.services;
 
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import hr.algebra.pawprotectorfront.models.*;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
-import org.springframework.security.oauth2.core.http.converter.OAuth2AccessTokenResponseHttpMessageConverter;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import java.time.OffsetDateTime;
+import java.util.List;
 
 
 @Service
@@ -46,10 +48,15 @@ public class HksApiService {
     private String getOath2User;
     @Value("${api.donation.url}")
     private String postDonation;
+    @Value("${api.getUserReviewsByBreederId.url}")
+    private String getUserReviewBsByUserId;
 
     private final RestTemplate restTemplate;
+    private final ObjectMapper objectMapper;
+
     private String token;
-    public HksApiService(){
+    public HksApiService(ObjectMapper objectMapper){
+        this.objectMapper = objectMapper;
         this.restTemplate = new RestTemplate(new HttpComponentsClientHttpRequestFactory());
     }
     public String getToken() {
@@ -245,6 +252,21 @@ String url = getOath2User+"?name="+username;
         if (response.getStatusCode() != HttpStatus.CREATED) {
 
             throw new RuntimeException("Failed to post Donation " + response.getStatusCode());
+        }
+    }
+
+    public List<UserReview> getUserReviewsByBreederId(String token, Integer breederId) throws JsonProcessingException {
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("Authorization", "Bearer " + token);
+        String url = getUserReviewBsByUserId +"?id="+breederId;
+        HttpEntity<String> entity = new HttpEntity<>(headers);
+        ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.GET, entity, String.class);
+
+        if (response.getStatusCode() == HttpStatus.OK) {
+            return objectMapper.readValue(response.getBody(), new TypeReference<List<UserReview>>() {});
+
+        } else {
+            throw new RuntimeException("Failed to get Breeders: " + response.getStatusCode());
         }
     }
 }
