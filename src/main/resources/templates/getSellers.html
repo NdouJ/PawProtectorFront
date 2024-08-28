@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="_layout">
+
+<head>
+    <title>Seller List</title>
+    <style>
+        /* Custom styles for the list */
+        .seller-list {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        .seller-list li {
+            padding: 10px;
+            border-bottom: 1px solid #ccc;
+        }
+
+        .seller-list li:last-child {
+            border-bottom: none;
+        }
+
+        .seller-name {
+            font-weight: bold;
+            font-size: 1.2em;
+        }
+
+        .contact-info {
+            margin-top: 5px;
+            font-style: italic;
+            color: blue;
+            cursor: pointer;
+            border: none;
+            background: none;
+            text-decoration: underline;
+            padding: 0;
+        }
+    </style>
+</head>
+
+<body>
+<div class="container my-4">
+    <div layout:fragment="content">
+        <h2>Seller List</h2>
+        <ul class="seller-list">
+            <li th:each="seller : ${sellers}">
+                <span class="seller-name" th:text="${seller.breederName}"></span>
+                <!-- Using a form to submit contactInfo -->
+                <form th:action="@{/user/getSellersPack}" method="get" style="display:inline;">
+                    <input type="hidden" name="contactInfo" th:value="${seller.contactInfo}"/>
+                    <button type="submit" class="contact-info" th:text="${seller.contactInfo}"></button>
+                </form>
+            </li>
+        </ul>
+    </div>
+</div>
+</body>
+</html>

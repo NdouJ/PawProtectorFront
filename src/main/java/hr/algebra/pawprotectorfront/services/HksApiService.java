@@ -50,7 +50,10 @@ public class HksApiService {
     private String postDonation;
     @Value("${api.getUserReviewsByBreederId.url}")
     private String getUserReviewBsByUserId;
-
+    @Value("${api.allSellers.url}")
+    private String getAllSellers;
+    @Value("${api.getpackInfo.url}")
+    private String getPackInfo;
     private final RestTemplate restTemplate;
     private final ObjectMapper objectMapper;
 
@@ -169,7 +172,7 @@ public String postSeller(String token, Seller seller) {
         packInfo.setDog("dog");
         packInfo.setMaleCount(1);
         packInfo.setFMaleCount(1);
-        packInfo.setBirthDate(OffsetDateTime.now());
+       // packInfo.setBirthDate(OffsetDateTime.now());
         HttpEntity<PackInfo> entity = new HttpEntity<>(packInfo, headers);
         ResponseEntity<String> response = restTemplate.exchange(postPackInfo, HttpMethod.POST, entity, String.class);
         if (response.getStatusCode() == HttpStatus.OK) {
@@ -267,6 +270,36 @@ String url = getOath2User+"?name="+username;
 
         } else {
             throw new RuntimeException("Failed to get Breeders: " + response.getStatusCode());
+        }
+    }
+
+    public List<Seller> getAllSellers(String token) throws JsonProcessingException {
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("Authorization", "Bearer " + token);
+        HttpEntity<String> entity = new HttpEntity<>(headers);
+        ResponseEntity<String> response = restTemplate.exchange(getAllSellers, HttpMethod.GET, entity, String.class);
+
+        if (response.getStatusCode() == HttpStatus.OK) {
+            return objectMapper.readValue(response.getBody(), new TypeReference<List<Seller>>() {});
+
+        } else {
+            throw new RuntimeException("Failed to get Sellers: " + response.getStatusCode());
+        }
+    }
+
+    public PackInfo getPackInfo(String token, String breederContact) throws JsonProcessingException {
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("Authorization", "Bearer " + token);
+        breederContact = breederContact.replace("%40", "@");
+        String url = getPackInfo+breederContact;
+        HttpEntity<String> entity = new HttpEntity<>(headers);
+        ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.GET, entity, String.class);
+
+        if (response.getStatusCode() == HttpStatus.OK) {
+            return objectMapper.readValue(response.getBody(), new TypeReference<PackInfo>() {});
+
+        } else {
+            throw new RuntimeException("Failed to get Sellers: " + response.getStatusCode());
         }
     }
 }

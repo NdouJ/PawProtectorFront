@@ -1,6 +1,9 @@
 package hr.algebra.pawprotectorfront.controllers;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import hr.algebra.pawprotectorfront.models.Donation;
+import hr.algebra.pawprotectorfront.models.PackInfo;
+import hr.algebra.pawprotectorfront.models.Seller;
 import hr.algebra.pawprotectorfront.models.UserReview;
 import hr.algebra.pawprotectorfront.services.HksApiService;
 import jakarta.servlet.http.HttpSession;
@@ -11,6 +14,9 @@ import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Controller
 public class UserController {
@@ -79,5 +85,29 @@ userReview.setIdUserReview(1);
         double amount = donation.getAmount();
         hksApiService.postDonation(hksApiService.getToken(), donation);
         return "redirect:/paypal/donate?amount=" + amount;
+    }
+
+    @GetMapping("/user/getSellers")
+    public String getSellers(Model model) {
+        List<Seller> sellers = new ArrayList<>();
+
+        try {
+            sellers=hksApiService.getAllSellers(hksApiService.getToken());
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
+        model.addAttribute("sellers", sellers);
+        return "getSellers";
+    }
+    @GetMapping("/user/getSellersPack")
+    public String getSellersPack(@RequestParam("contactInfo") String contactInfo, Model model) {
+        PackInfo packInfo = new PackInfo();
+        try {
+            packInfo = hksApiService.getPackInfo(hksApiService.getToken(), contactInfo);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
+        model.addAttribute("packInfo", packInfo);
+        return "sellersPack";
     }
 }

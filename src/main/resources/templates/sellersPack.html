@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="_layout">
+
+<head>
+  <title>Pack Info</title>
+  <style>
+    .pack-info-container {
+      margin-top: 20px;
+      padding: 20px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      background-color: #f9f9f9;
+    }
+
+    .pack-info-item {
+      margin-bottom: 15px;
+    }
+
+    .pack-info-item label {
+      font-weight: bold;
+      display: block;
+      margin-bottom: 5px;
+    }
+
+    .pack-info-item span {
+      font-size: 1.1em;
+      color: #333;
+    }
+  </style>
+</head>
+
+<body>
+<div class="container my-4">
+  <div layout:fragment="content">
+    <h2>Pack Information</h2>
+    <div class="pack-info-container">
+      <div class="pack-info-item">
+        <label>Seller Contact Info:</label>
+        <span th:text="${packInfo.sellerContactInfo}"></span>
+      </div>
+      <div class="pack-info-item">
+        <label>Dog:</label>
+        <span th:text="${packInfo.dog}"></span>
+      </div>
+      <div class="pack-info-item">
+        <label>Birth Date:</label>
+        <span th:text="${#temporals.format(packInfo.birthDate, 'yyyy-MM-dd HH:mm:ss')}"></span>
+      </div>
+      <div class="pack-info-item">
+        <label>Male Count:</label>
+        <span th:text="${packInfo.maleCount}"></span>
+      </div>
+      <div class="pack-info-item">
+        <label>Female Count:</label>
+        <span th:text="${packInfo.fMaleCount}"></span>
+      </div>
+      <div class="pack-info-item">
+        <label>Description:</label>
+        <span th:text="${packInfo.description}"></span>
+      </div>
+      <div class="pack-info-item">
+        <label>Price:</label>
+        <span th:text="${packInfo.price}"></span>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>
