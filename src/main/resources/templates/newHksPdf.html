@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="_layout">
+
+<body>
+<div class="container my-4">
+  <div layout:fragment="content">
+    <!-- Form to send the URL string -->
+    <form action="#" th:action="@{/admin/newHksPdf}" method="post">
+      <div class="form-group">
+        <label for="url">Enter URL:</label>
+        <input type="text" id="url" name="url" class="form-control" required />
+      </div>
+      <button type="submit" class="btn btn-primary mt-3">Submit</button>
+    </form>
+
+    <!-- Error message handling -->
+    <div th:if="${errorMessage}" class="alert alert-danger mt-3">
+      <p th:text="${errorMessage}"></p>
+    </div>
+  </div>
+</div>
+</body>
+</html>

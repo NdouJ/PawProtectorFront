@@ -50,10 +50,20 @@ public class HksApiService {
     private String postDonation;
     @Value("${api.getUserReviewsByBreederId.url}")
     private String getUserReviewBsByUserId;
-    @Value("${api.allSellers.url}")
+    @Value("${api.getAllSellers.url}")
     private String getAllSellers;
     @Value("${api.getpackInfo.url}")
     private String getPackInfo;
+    @Value("${api.postNewBreeders.url}")
+    private String postHksBreeders;
+
+    @Value("${api.deleteSeller.url}")
+    private String deleteSeller;
+    @Value("${api.updateSeller.url}")
+    private String updateSeller;
+
+    @Value("${api.getSellerById.url}")
+    private String getSellerById;
     private final RestTemplate restTemplate;
     private final ObjectMapper objectMapper;
 
@@ -286,7 +296,48 @@ String url = getOath2User+"?name="+username;
             throw new RuntimeException("Failed to get Sellers: " + response.getStatusCode());
         }
     }
+    public String deleteSellerById(String token, Integer id)  {
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("Authorization", "Bearer " + token);
+        HttpEntity<String> entity = new HttpEntity<>(headers);
+        String deleteUrl= deleteSeller +"/"+id;
+        ResponseEntity<String> response = restTemplate.exchange(deleteUrl, HttpMethod.DELETE, entity, String.class);
 
+        if (response.getStatusCode() == HttpStatus.OK) {
+            return "deleted";
+        } else {
+            throw new RuntimeException("Failed to get Sellers: " + response.getStatusCode());
+        }
+    }
+
+    public Seller getSellerByID(String token, Integer Id) throws JsonProcessingException {
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("Authorization", "Bearer " + token);
+        String url = getSellerById +Id;
+        HttpEntity<String> entity = new HttpEntity<>(headers);
+        ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.GET, entity, String.class);
+
+        if (response.getStatusCode() == HttpStatus.OK) {
+            return objectMapper.readValue(response.getBody(), new TypeReference<Seller>() {});
+
+        } else {
+            throw new RuntimeException("Failed to get Breeders: " + response.getStatusCode());
+        }
+    }
+
+    public String updateSeller(String token, Seller seller) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("Authorization", "Bearer " + token);
+        HttpEntity<Seller> entity = new HttpEntity<>(seller, headers);
+        seller.setIdSeller(1);
+
+        ResponseEntity<String> response = restTemplate.exchange(updateSeller, HttpMethod.POST, entity, String.class);
+        if (response.getStatusCode() == HttpStatus.OK) {
+            return response.getBody();
+        } else {
+            throw new RuntimeException("Failed to post Seller " + response.getStatusCode());
+        }
+    }
     public PackInfo getPackInfo(String token, String breederContact) throws JsonProcessingException {
         HttpHeaders headers = new HttpHeaders();
         headers.set("Authorization", "Bearer " + token);
@@ -302,4 +353,15 @@ String url = getOath2User+"?name="+username;
             throw new RuntimeException("Failed to get Sellers: " + response.getStatusCode());
         }
     }
-}
+
+    public void postNewHksBreeds(String token, String url) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("Authorization", "Bearer " + token);
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        String fullUrl = postHksBreeders +"?url="+url;
+        HttpEntity<String> entity = new HttpEntity<>(headers);
+        ResponseEntity<String> response = restTemplate.exchange(fullUrl, HttpMethod.GET, entity, String.class);
+    }
+
+    }
+
