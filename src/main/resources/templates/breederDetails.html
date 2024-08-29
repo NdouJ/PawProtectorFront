@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="_layout">
+
+<body>
+<div class="container my-4">
+    <div layout:fragment="content">
+        <div class="mt-4">
+            <h2>Breeder Reviews</h2>
+
+            <!-- Check if there are reviews to display -->
+            <div th:if="${userReviews != null && !userReviews.isEmpty()}">
+                <ul class="list-group">
+                    <li class="list-group-item" th:each="review : ${userReviews}">
+                        <p><strong>Grade:</strong> <span th:text="${review.grade}"></span></p>
+                        <p><strong>Review:</strong> <span th:text="${review.review}"></span></p>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- Message when there are no reviews -->
+            <div th:if="${userReviews == null || userReviews.isEmpty()}">
+                <p>No reviews available for this breeder.</p>
+            </div>
+        </div>
+        <form action="/user/addReview" method="GET">
+            <button type="submit" class="btn btn-primary">Add Review</button>
+        </form>
+        <a href="/" class="btn btn-secondary">Back to Breeders List</a>
+    </div>
+</div>
+</body>
+</html>

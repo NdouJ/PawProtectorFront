@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="_layout">
+
+<head>
+  <title>Update Seller</title>
+</head>
+<body>
+<div class="container my-4">
+  <div layout:fragment="content">
+    <h2>Update Seller</h2>
+    <form th:action="@{/admin/updateSeller}" th:object="${updateSeller}" method="post">
+      <div class="form-group">
+        <label for="idSeller">Seller ID</label>
+        <input type="text" class="form-control" id="idSeller" th:field="*{idSeller}" readonly>
+      </div>
+      <div class="form-group">
+        <label for="breederName">Breeder Name</label>
+        <input type="text" class="form-control" id="breederName" th:field="*{breederName}" required>
+      </div>
+      <div class="form-group">
+        <label for="contactInfo">Contact Info</label>
+        <input type="text" class="form-control" id="contactInfo" th:field="*{contactInfo}" required>
+      </div>
+      <div class="form-group">
+        <label for="oib">OIB</label>
+        <input type="text" class="form-control" id="oib" th:field="*{oib}" required>
+      </div>
+      <div class="form-group">
+        <label for="tempPassword">Temporary Password</label>
+        <input type="text" class="form-control" id="tempPassword" th:field="*{tempPassword}">
+      </div>
+      <button type="submit" class="btn btn-primary">Update Seller</button>
+    </form>
+  </div>
+</div>
+</body>
+</html>
