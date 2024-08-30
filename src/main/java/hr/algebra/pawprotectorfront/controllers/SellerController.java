@@ -2,6 +2,8 @@ package hr.algebra.pawprotectorfront.controllers;
 
 import hr.algebra.pawprotectorfront.models.PackInfo;
 import hr.algebra.pawprotectorfront.services.HksApiService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -13,6 +15,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 
 @Controller
 public class SellerController {
+    Logger logger = LoggerFactory.getLogger(SellerController.class);
+
     private final HksApiService hksApiService;
 
     public SellerController(HksApiService hksApiService) {
@@ -36,6 +40,6 @@ public class SellerController {
         String token = hksApiService.getToken();
         hksApiService.savePackInfo(token, packInfo);
         model.addAttribute("message", "Pack information published successfully!");
-        return "success";
+        return "redirect:/success";
     }
 }

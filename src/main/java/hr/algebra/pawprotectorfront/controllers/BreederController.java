@@ -8,6 +8,8 @@ import hr.algebra.pawprotectorfront.models.Dog;
 import hr.algebra.pawprotectorfront.models.UserReview;
 import hr.algebra.pawprotectorfront.services.HksApiService;
 import jakarta.servlet.http.HttpSession;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -20,8 +22,8 @@ import java.util.List;
 
 @Controller
 public class BreederController {
+    Logger logger = LoggerFactory.getLogger(BreederController.class);
     private final HksApiService hksApiService;
-
     public BreederController(HksApiService hksApiService) {
         this.hksApiService = hksApiService;
     }
@@ -30,28 +32,15 @@ public class BreederController {
     public String getBreedersOfDog(@RequestParam("dogName") String dogName, Model model) {
         try {
             String token = hksApiService.getToken();
-            String jsonResponse = hksApiService.getBreedersOfDog(token, dogName);
-
-            // Assuming parseBreeders parses JSON correctly
-            List<Breeder> breeders = parseBreeders(jsonResponse);
-
+            List<Breeder> breeders = hksApiService.getBreedersOfDog(token, dogName);
             model.addAttribute("breeders", breeders);
             return "breeders";
         } catch (Exception e) {
-            e.printStackTrace();  // Log the error
-            return "error";  // Return an error view if something goes wrong
+            logger.error("Error occurred while trying to breeders "+ e);
+            return "error";
         }
     }
 
-    private List<Breeder> parseBreeders(String jsonResponse) {
-        ObjectMapper objectMapper = new ObjectMapper();
-        try {
-            return objectMapper.readValue(jsonResponse, new TypeReference<List<Breeder>>() {});
-        } catch (Exception e) {
-            e.printStackTrace();
-            return null;
-        }
-    }
     @GetMapping("/breederDetails/{id}")
     public String getBreederDetails(@PathVariable("id") Integer breederId, Model model, HttpSession session) {
         session.setAttribute("breederId", breederId);
@@ -59,19 +48,11 @@ public class BreederController {
         try {
           userReviews=  hksApiService.getUserReviewsByBreederId(hksApiService.getToken(), breederId);
         } catch (JsonProcessingException e) {
-
+            logger.error("Error occurred while trying to breeder "+ e);
+            return "error";
         }
         model.addAttribute("userReviews", userReviews);
         return "breederDetails";
     }
 
-    public List<Dog> parseDogs(String jsonResponse) {
-        ObjectMapper objectMapper = new ObjectMapper();
-        try {
-            return objectMapper.readValue(jsonResponse, new TypeReference<List<Dog>>() {});
-        } catch (Exception e) {
-            e.printStackTrace();
-            return null;
-        }
-    }
 }

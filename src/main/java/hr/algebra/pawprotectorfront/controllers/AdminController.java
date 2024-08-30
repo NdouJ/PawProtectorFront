@@ -1,12 +1,12 @@
 package hr.algebra.pawprotectorfront.controllers;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import hr.algebra.pawprotectorfront.models.Breeder;
 import hr.algebra.pawprotectorfront.models.Seller;
 import hr.algebra.pawprotectorfront.services.EmailService;
 import hr.algebra.pawprotectorfront.services.HksApiService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -19,6 +19,7 @@ import java.util.List;
 
 @Controller
 public class AdminController {
+    Logger logger = LoggerFactory.getLogger(AdminController.class);
 
     private final HksApiService hksApiService;
     private final EmailService emailService;
@@ -39,16 +40,12 @@ public class AdminController {
         model.addAttribute("seller", new Seller());
         try {
             String token = hksApiService.getToken();
-            String breedersJsonResponse = hksApiService.getAllBreeders(token);
-            List<Breeder> breeders = parseBreeders(breedersJsonResponse);
+            List<Breeder> breeders = hksApiService.getAllBreeders(token);
             model.addAttribute("breeders", breeders);
 
-
         } catch (Exception e) {
-            e.printStackTrace();
-            model.addAttribute("errorMessage", "Oops something went wrong");
+            logger.error("Error occurred while trying to delete seller"+ e);
         }
-
         return "addSellerForm";
     }
 
@@ -61,13 +58,12 @@ public class AdminController {
             hksApiService.postSeller(token, seller);
             emailService.sendEmail(seller.getContactInfo(), seller.getTempPassword());
             model.addAttribute("seller", seller);
-
+            System.out.println("TEMP"+seller.getTempPassword());
         } catch (Exception e) {
-            e.printStackTrace();
-            model.addAttribute("errorMessage", "Failed to add seller. Please try again.");
+            logger.error("Error occurred while trying to addSeller "+ e);
         }
 
-        return "success";
+        return "redirect:/success";
     }
 
     @GetMapping("/admin/newHksPdf")
@@ -84,11 +80,11 @@ public class AdminController {
             hksApiService.postNewHksBreeds(token, url);
 
         } catch (Exception e) {
-            e.printStackTrace();
-            model.addAttribute("errorMessage", "Failed to post hks breeds. Please try again.");
+            logger.error("Error occurred while trying to newHksPdf "+ e);
+            return "error";
         }
+        return "redirect:/success";
 
-        return "success";
     }
 
     @GetMapping("/admin/getSellers")
@@ -98,12 +94,12 @@ public class AdminController {
         try {
             sellers=hksApiService.getAllSellers(hksApiService.getToken());
         } catch (JsonProcessingException e) {
-            throw new RuntimeException(e);
+            logger.error("Error occurred while trying to /admin/getSellers "+ e);
+            return "error";
         }
         model.addAttribute("sellers", sellers);
         return "adminCrudSellers";
     }
-
 
     @GetMapping("/admin/updateSeller")
     public String updateSeller(@RequestParam("id") Integer idSeller, Model model) {
@@ -111,7 +107,8 @@ public class AdminController {
         try {
             updateSeller  = hksApiService.getSellerByID(hksApiService.getToken(),idSeller);
         } catch (JsonProcessingException e) {
-            throw new RuntimeException(e);
+            logger.error("Error occurred while trying to /admin/updateSeller "+ e);
+            return "error";
         }
         model.addAttribute("updateSeller", updateSeller);
         return "updateSeller";
@@ -121,32 +118,20 @@ public class AdminController {
         try {
             hksApiService.updateSeller(hksApiService.getToken(), updateSeller);
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            logger.error("Error occurred while trying to /admin/updateSeller "+ e);
+            return "error";
         }
-        return "redirect:/admin/success";
+        return "redirect:/success";
     }
-    // Delete Seller
+
     @GetMapping("/admin/deleteSeller")
     public String deleteSeller(@RequestParam("id") Integer idSeller, Model model) {
         try {
             hksApiService.deleteSellerById(hksApiService.getToken(), idSeller);
-            return "success";
+            return "redirect:/success";
         } catch (Exception e) {
+            logger.error("Error occurred while trying to /admin/deleteSeller "+ e);
             return "error";
-        }
-    }
-
-
-
-
-
-    public List<Breeder> parseBreeders(String jsonResponse) {
-        ObjectMapper objectMapper = new ObjectMapper();
-        try {
-            return objectMapper.readValue(jsonResponse, new TypeReference<List<Breeder>>() {});
-        } catch (Exception e) {
-            e.printStackTrace();
-            return null;
         }
     }
 }
