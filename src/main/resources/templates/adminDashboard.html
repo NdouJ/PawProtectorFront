@@ -3,60 +3,111 @@
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="_layout">
 
-<style>
-    .col-custom {
-        width: 150px; /* Adjust width as needed */
-        height: 150px; /* Adjust height to match width for a circle */
-        color: white;
-        text-align: center;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 1.2rem;
-        border-radius: 50%; /* This makes the element circular */
-        text-decoration: none; /* Remove underline from links */
-        overflow: hidden; /* Hide any overflowed text */
-        padding: 1rem;
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Optional: Adds shadow for better visual */
-    }
-    .col-1 { background-color: #f44336; } /* Red */
-    .col-2 { background-color: #4caf50; } /* Green */
-    .col-3 { background-color: #2196f3; } /* Blue */
-    .col-4 { background-color: #ff9800; } /* Orange */
-    .col-custom p {
-        margin: 0;
-        font-size: 0.8rem;
-    }
-</style>
+<head>
+    <style>
 
-<body>
+        .col-custom {
+            width: 150px;
+            height: 150px;
+            color: white;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            font-size: 1rem;
+            border-radius: 50%;
+            text-decoration: none;
+            overflow: hidden;
+            padding: 1rem;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            transition: transform 0.3s, box-shadow 0.3s;
+            position: relative;
+            z-index: 1;
+            margin: 10px; /* Adds some space between the circles */
+            background-color: transparent; /* Remove background color to better see paw print */
+        }
 
-<div class="container my-4">
+        .col-custom:hover {
+            transform: scale(1.05);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+        }
+
+        .col-3 {
+            background-color: #2196f3;
+        } /* Blue */
+
+
+        .col-custom p {
+            margin: 0;
+            font-size: 0.85rem;
+            text-align: center;
+        }
+
+        .col-custom::before, .col-custom::after {
+            content: "";
+            position: absolute;
+            border-radius: 50%;
+            background-color: currentColor;
+        }
+
+        .col-custom::before {
+            width: 50px;
+            height: 50px;
+            bottom: 20px;
+            left: 20px;
+            background-color: currentColor;
+        }
+
+        .col-custom::after {
+            width: 70px;
+            height: 70px;
+            bottom: 0;
+            right: 0;
+            background-color: currentColor;
+        }
+
+        .col-custom::before {
+            width: 30px;
+            height: 30px;
+            top: 10px;
+            left: 15px;
+            background-color: currentColor;
+        }
+
+        .col-custom::after {
+            width: 30px;
+            height: 30px;
+            top: 10px;
+            right: 15px;
+            background-color: currentColor;
+        }
+
+    </style>
+</head>
+
+        <div class="p-2">
     <div layout:fragment="content">
-        <div class="row">
-            <div class="col-md-3 d-flex justify-content-center mb-4">
-                <a href="page1.html" class="col-custom col-1">
-                    <p>Update pack</p>
-                    <p>Lorem ipsum dolor sit amet.</p>
-                </a>
-            </div>
-            <div class="col-md-3 d-flex justify-content-center mb-4">
-                <a href="page2.html" class="col-custom col-2">
-                    <p>Dogs</p>
-                    <p>Lorem ipsum dolor sit amet.</p>
-                </a>
-            </div>
-            <div class="col-md-3 d-flex justify-content-center mb-4">
-                <p>SELLER</p>
-                <div>
-                    <a href="addSeller" class="col-custom col-3">
-                        <p>Add Seller</p>
-                    </a>
-                </div>
-            </div>
+        <div class="full-height d-flex justify-content-center align-items-center">
+            <!-- First Circle -->
+            <a href="/admin/newHksPdf" class="col-custom col-3">
+                <p class="fw-bold">New Hks Pdf</p>
+            </a>
+            <!-- Second Circle -->
+            <a href="addSeller" class="col-custom col-3">
+                <p class="fw-bold">Add Seller</p>
+            </a>
+            <!-- Third Circle -->
+            <a href="getSellers" class="col-custom col-3">
+                <p class="fw-bold">View Sellers</p>
+            </a>
         </div>
-    </div>
-</div>
 
-</body>
+    </div>
+        </div>
 </html>
+
+
+
+
+

@@ -10,6 +10,8 @@ import org.springframework.http.*;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
+
+import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 import java.util.List;
 
@@ -96,8 +98,7 @@ public class HksApiService {
     }
 
 
-    public String getAllDogs(String token) {
-        // Set up headers with the Bearer token
+    public List<Dog> getAllDogs(String token) throws JsonProcessingException {
         HttpHeaders headers = new HttpHeaders();
         headers.set("Authorization", "Bearer " + token);
 
@@ -105,27 +106,29 @@ public class HksApiService {
         ResponseEntity<String> response = restTemplate.exchange(dogsUrl, HttpMethod.GET, entity, String.class);
 
         if (response.getStatusCode() == HttpStatus.OK) {
-            return response.getBody();
+            return objectMapper.readValue(response.getBody(), new TypeReference<List<Dog>>() {});
+
         } else {
             throw new RuntimeException("Failed to get dogs: " + response.getStatusCode());
         }
     }
 
     //Breeder
-    public String getBreedersOfDog(String token, String dogName) {
+    public List<Breeder> getBreedersOfDog(String token, String dogName) throws JsonProcessingException {
         String url = String.format("%s?dog=%s", breedersOfDog, dogName);
         HttpHeaders headers = new HttpHeaders();
         headers.set("Authorization", "Bearer " + token);
         HttpEntity<String> entity = new HttpEntity<>(headers);
         ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.GET, entity, String.class);
         if (response.getStatusCode() == HttpStatus.OK) {
-            return response.getBody();
+            return objectMapper.readValue(response.getBody(), new TypeReference<List<Breeder>>() {});
+
         } else {
             throw new RuntimeException("Failed to get breeders of dog: " + response.getStatusCode());
         }
     }
 
-    public String getAllBreeders(String token) {
+    public List<Breeder> getAllBreeders(String token) throws JsonProcessingException {
         HttpHeaders headers = new HttpHeaders();
         headers.set("Authorization", "Bearer " + token);
 
@@ -133,7 +136,7 @@ public class HksApiService {
         ResponseEntity<String> response = restTemplate.exchange(getBreeders, HttpMethod.GET, entity, String.class);
 
         if (response.getStatusCode() == HttpStatus.OK) {
-            return response.getBody();
+            return objectMapper.readValue(response.getBody(), new TypeReference<List<Breeder>>() {});
         } else {
             throw new RuntimeException("Failed to get Breeders: " + response.getStatusCode());
         }
@@ -182,7 +185,7 @@ public String postSeller(String token, Seller seller) {
         packInfo.setDog("dog");
         packInfo.setMaleCount(1);
         packInfo.setFMaleCount(1);
-       // packInfo.setBirthDate(OffsetDateTime.now());
+        packInfo.setBirthDate(LocalDateTime.now());
         HttpEntity<PackInfo> entity = new HttpEntity<>(packInfo, headers);
         ResponseEntity<String> response = restTemplate.exchange(postPackInfo, HttpMethod.POST, entity, String.class);
         if (response.getStatusCode() == HttpStatus.OK) {
@@ -329,7 +332,6 @@ String url = getOath2User+"?name="+username;
         HttpHeaders headers = new HttpHeaders();
         headers.set("Authorization", "Bearer " + token);
         HttpEntity<Seller> entity = new HttpEntity<>(seller, headers);
-        seller.setIdSeller(1);
 
         ResponseEntity<String> response = restTemplate.exchange(updateSeller, HttpMethod.POST, entity, String.class);
         if (response.getStatusCode() == HttpStatus.OK) {

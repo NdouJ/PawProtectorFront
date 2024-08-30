@@ -38,10 +38,8 @@
   </style>
 </head>
 
-<body>
 <div class="container my-4">
   <div layout:fragment="content">
-    <h2>Seller List</h2>
     <table class="seller-table">
       <thead>
       <tr>
@@ -63,12 +61,12 @@
             <!-- Update Button -->
             <form th:action="@{/admin/updateSeller}" method="get">
               <input type="hidden" name="id" th:value="${seller.idSeller}"/>
-              <button type="submit">Update</button>
+              <button type="submit" class="btn btn-primary">Update</button>
             </form>
             <!-- Delete Button -->
             <form th:action="@{/admin/deleteSeller}" method="get">
               <input type="hidden" name="id" th:value="${seller.idSeller}" />
-              <button type="submit">Delete</button>
+              <button type="submit" class="btn btn-danger">Delete</button>
             </form>
 
           </div>
@@ -78,5 +76,4 @@
     </table>
   </div>
 </div>
-</body>
 </html>

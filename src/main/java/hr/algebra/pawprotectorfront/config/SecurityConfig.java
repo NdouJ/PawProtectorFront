@@ -69,6 +69,10 @@ public class SecurityConfig {
                         .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse()))
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/").permitAll()
+                        .requestMatchers("/about").permitAll()
+                        .requestMatchers("/success").permitAll()
+                        .requestMatchers("/cancel").permitAll()
+                        .requestMatchers("/error").permitAll()
                         .requestMatchers("/breederOfDog").permitAll()
                         .requestMatchers("/breederDetails/**").permitAll()
                         .requestMatchers("/login/**").permitAll()

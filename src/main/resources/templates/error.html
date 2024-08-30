@@ -1,0 +1,65 @@
+<style>
+  .center {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 80vh; /* Adjusted to make room for the footer */
+    text-align: center;
+    flex-direction: column;
+    margin: 0 10%; /* 10% margin on the left and right */
+  }
+  body::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-image: url(https://i.pinimg.com/originals/51/62/64/516264eab5a7cb6da4a8b206ce90ef6b.gif);
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    opacity: 0.5; /* Adjust the opacity here */
+    z-index: -1;
+
+  }
+body{
+  font-family: "DM Serif Text", serif;
+  font-weight: 400;
+  font-style: normal;
+  font-size: 2rem;
+}
+  footer {
+    text-align: center;
+    padding: 10px;
+    background-color: rgba(0, 0, 0, 0.5);
+  }
+</style>
+
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Text:ital@0;1&display=swap" rel="stylesheet">
+</head>
+<body>
+<div class='center'>
+  <h2>Error occurred</h2>
+  <p>We are digging for a solution</p>
+  <a href="/" class="active" style="text-decoration: none; color: #333; font-weight: bold;">
+    &#128062; Home &#128062;
+  </a>
+</div>
+
+<footer class="bg-light text-center text-lg-start mt-4">
+  <div class="text-center p-3">
+    © 2024 PawProtector - All rights reserved.
+  </div>
+</footer>
+</body>
+</html>

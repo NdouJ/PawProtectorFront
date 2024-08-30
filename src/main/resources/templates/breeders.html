@@ -4,7 +4,6 @@
       layout:decorate="_layout">
 
 <style>
-  /* Custom styles */
   .table img {
     transition: transform 0.3s ease;
   }
@@ -22,6 +21,7 @@
         <th>Breeder Name</th>
         <th>Info</th>
         <th>Contact</th>
+        <th>Details</th>
       </tr>
       </thead>
       <tbody>
@@ -30,6 +30,8 @@
         <td th:text="${breeder.getBreederName()}"></td>
         <td th:text="${breeder.getBreederInfo()}"></td>
         <td th:text="${breeder.getBreederContact()}"></td>
+        <td><button class="btn btn-primary">See Breeder</button></td>
+
       </tr>
       </tbody>
     </table>

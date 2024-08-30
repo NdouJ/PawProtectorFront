@@ -7,6 +7,8 @@ import hr.algebra.pawprotectorfront.models.Seller;
 import hr.algebra.pawprotectorfront.models.UserReview;
 import hr.algebra.pawprotectorfront.services.HksApiService;
 import jakarta.servlet.http.HttpSession;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
@@ -20,6 +22,7 @@ import java.util.List;
 
 @Controller
 public class UserController {
+    Logger logger = LoggerFactory.getLogger(UserController.class);
     private final HksApiService hksApiService;
 
     public UserController(HksApiService hksApiService) {
@@ -34,26 +37,30 @@ public class UserController {
 
     @PostMapping("/user/addReview")
     public String addReview(@ModelAttribute UserReview userReview, Model model, HttpSession session) {
-        //prvo moramo postati usera, ako nije
-         String username = GetOath2UserName();
-         hksApiService.postOath2User(username, hksApiService.getToken());
 
-        //uzeti userID
-        userReview.setUserId(hksApiService.getOathUserId(username, hksApiService.getToken()));
+        try{
+            String username = GetOath2UserName();
+            hksApiService.postOath2User(username, hksApiService.getToken());
 
-        // Retrieve the breederId from the session
-        Integer breederId = (Integer) session.getAttribute("breederId");
-        if (breederId != null) {
-            userReview.setBreederId(breederId);
-            session.removeAttribute("breederId");
-        } else {
-            model.addAttribute("error", "Breeder ID not found in session");
+            userReview.setUserId(hksApiService.getOathUserId(username, hksApiService.getToken()));
+
+            // Retrieve the breederId from the session
+            Integer breederId = (Integer) session.getAttribute("breederId");
+            if (breederId != null) {
+                userReview.setBreederId(breederId);
+                session.removeAttribute("breederId");
+            } else {
+                model.addAttribute("error", "Breeder ID not found in session");
+            }
+            // postatiUserReview
+            userReview.setIdUserReview(1);
+            hksApiService.postUserReview(userReview, hksApiService.getToken());
         }
-        // postatiUserReview
-userReview.setIdUserReview(1);
-        hksApiService.postUserReview(userReview, hksApiService.getToken());
-
-        return "success";
+        catch (Error e) {
+            logger.error("Error occurred while trying to /user/addReview "+ e);
+        return "error";
+        }
+        return "redirect:/success";
     }
 
     private String GetOath2UserName() {
@@ -94,7 +101,8 @@ userReview.setIdUserReview(1);
         try {
             sellers=hksApiService.getAllSellers(hksApiService.getToken());
         } catch (JsonProcessingException e) {
-            throw new RuntimeException(e);
+            logger.error("Error occurred while trying to /user/addReview "+ e);
+            return "error";
         }
         model.addAttribute("sellers", sellers);
         return "getSellers";
@@ -105,7 +113,8 @@ userReview.setIdUserReview(1);
         try {
             packInfo = hksApiService.getPackInfo(hksApiService.getToken(), contactInfo);
         } catch (JsonProcessingException e) {
-            throw new RuntimeException(e);
+            logger.error("Error occurred while trying to /user/addReview "+ e);
+            return "error";
         }
         model.addAttribute("packInfo", packInfo);
         return "sellersPack";

@@ -4,14 +4,10 @@
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="_layout">
 
-<head>
-  <title>Update Seller</title>
-</head>
-<body>
+
 <div class="container my-4">
   <div layout:fragment="content">
-    <h2>Update Seller</h2>
-    <form th:action="@{/admin/updateSeller}" th:object="${updateSeller}" method="post">
+   <form th:action="@{/admin/updateSeller}" th:object="${updateSeller}" method="post">
       <div class="form-group">
         <label for="idSeller">Seller ID</label>
         <input type="text" class="form-control" id="idSeller" th:field="*{idSeller}" readonly>
@@ -32,9 +28,8 @@
         <label for="tempPassword">Temporary Password</label>
         <input type="text" class="form-control" id="tempPassword" th:field="*{tempPassword}">
       </div>
-      <button type="submit" class="btn btn-primary">Update Seller</button>
+      <button type="submit" class="btn btn-primary mt-3">Update Seller</button>
     </form>
   </div>
 </div>
-</body>
 </html>
